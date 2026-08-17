@@ -1,0 +1,46 @@
+# Two services from one image: the API and the Streamlit UI.
+#
+#   docker compose up --build
+#   API  -> http://localhost:8000/docs
+#   UI   -> http://localhost:8501
+#
+# Build the index BEFORE starting (or into the mounted volume afterwards):
+#   make index
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      INDEX_DIR: /srv/artifacts/index
+      # Read from your shell/.env; never hardcode a key in this file.
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-sentence-transformers}
+      RETRIEVAL_MODE: ${RETRIEVAL_MODE:-hybrid}
+      RETRIEVAL_TOP_K: ${RETRIEVAL_TOP_K:-5}
+    volumes:
+      # Index is data: mounted, not baked into the image.
+      - ./artifacts:/srv/artifacts
+      # Cache the embedding model between restarts instead of re-downloading
+      # ~90MB on every container start.
+      - hf-cache:/root/.cache/huggingface
+
+  ui:
+    build: .
+    command: streamlit run app/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      INDEX_DIR: /srv/artifacts/index
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-sentence-transformers}
+    volumes:
+      - ./artifacts:/srv/artifacts
+      - hf-cache:/root/.cache/huggingface
+    depends_on:
+      - api
+
+volumes:
+  hf-cache:

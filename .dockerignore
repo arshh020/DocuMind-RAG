@@ -1,0 +1,30 @@
+# Keeps the build context small and stops secrets or multi-GB corpora from
+# being shipped into an image layer.
+.git
+.gitignore
+.env
+.env.local
+
+# Corpus and build outputs are mounted at runtime, never baked in.
+data/corpus/*/
+artifacts/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+.vscode/
+.idea/
+.DS_Store
+
+# Docs are not needed at runtime. README.md is the exception: pyproject.toml
+# declares it as the package readme, so the build fails without it.
+ARCHITECTURE.md
+RUNBOOK.md

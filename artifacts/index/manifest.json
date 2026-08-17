@@ -1,0 +1,11 @@
+{
+  "embedding_provider": "sentence-transformers",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_dimension": 384,
+  "chunk_count": 2778,
+  "chunk_max_tokens": 512,
+  "chunk_overlap_tokens": 64,
+  "vector_backend": "numpy",
+  "built_at": "2026-08-17T12:25:32Z",
+  "vector_dimension": 384
+}

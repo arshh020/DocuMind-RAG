@@ -1,0 +1,4 @@
+Corpus: mdn-http
+License: CC-BY-SA 2.5+ (MDN Web Docs, https://github.com/mdn/content)
+Source repository: https://github.com/mdn/content.git
+Subdirectory: files/en-us/web/http

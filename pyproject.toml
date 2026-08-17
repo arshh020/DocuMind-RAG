@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docsrag"
+version = "0.1.0"
+description = "Hybrid-retrieval RAG over technical documentation, with a real evaluation harness"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["rag", "retrieval", "bm25", "hybrid-search", "evaluation"]
+
+# The core retrieval engine deliberately depends on numpy and nothing else.
+# Chunking, tokenization, BM25, fusion, and every metric are plain Python, so
+# the part of the system that decides answer quality has no framework in it.
+# That is a design decision, not an accident: it keeps the interesting logic
+# readable and unit-testable, and it means `pip install -e .` is instant.
+dependencies = [
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+# Local embeddings + cross-encoder reranking. This is the big download
+# (torch), which is exactly why it is optional.
+local = [
+    "sentence-transformers>=3.0",
+    "torch>=2.2",
+]
+# Approximate/optimized dense index. numpy exhaustive search is the default and
+# is faster than FAISS below roughly 100k vectors.
+faiss = [
+    "faiss-cpu>=1.8",
+]
+api = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.6",
+]
+ui = [
+    "streamlit>=1.34",
+    "requests>=2.31",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The suite also runs on a bare interpreter with:
+#   python -m unittest discover -s tests -t .
+# No pytest-only features are used, so CI cannot be blocked by a missing plugin.
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
