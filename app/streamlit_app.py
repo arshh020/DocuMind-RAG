@@ -23,7 +23,7 @@ from docsrag.config import RerankConfig, RetrievalConfig, Settings
 from docsrag.pipeline import RagPipeline
 
 st.set_page_config(
-    page_title="DocsRAG", page_icon="", layout="wide"
+    page_title="DocuMind", page_icon="", layout="wide"
 )
 
 
@@ -35,7 +35,7 @@ def load_pipeline(index_dir: str) -> RagPipeline:
 
 
 def main() -> None:
-    st.title("DocsRAG")
+    st.title("DocuMind")
     st.caption(
         "Retrieval-augmented question answering over technical documentation, "
         "with hybrid retrieval and inspectable evidence."

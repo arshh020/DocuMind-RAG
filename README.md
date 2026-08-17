@@ -1,4 +1,4 @@
-# DocsRAG
+# DocuMind
 
 A question-answering system over technical documentation that **measures its own
 retrieval quality** instead of assuming it works.
@@ -19,31 +19,6 @@ evaluation harness that scores every configuration on a labelled question set.
                                                                              v
                                              Answer + [1][2] source citations
 ```
-
-## Why this project looks different from the usual RAG demo
-
-Most RAG portfolio projects are a 60-line script: split text every 500
-characters, embed, retrieve top-3, ask an LLM. They cannot answer the only
-question that matters in an interview: _how do you know your retrieval is any
-good?_
-
-This one is built around that question.
-
-| Concern           | Typical tutorial project                             | This project                                                                                 |
-| ----------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Chunking          | fixed 500 chars, splits code blocks mid-example      | heading-aware, fence-safe, breadcrumb-prefixed, hard-split fallback for oversized paragraphs |
-| Retrieval         | dense only                                           | BM25 + dense, fused with RRF, per-component scores retained for debugging                    |
-| Tuning            | vibes                                                | `make eval` sweeps 4-5 configurations over a labelled set and prints a table                 |
-| Quality metrics   | none                                                 | recall@k, precision@k, MRR, nDCG, hit rate, p95 latency                                      |
-| Answer quality    | trust the LLM                                        | LLM-judge faithfulness scoring + a citation-or-refuse contract                               |
-| Citations         | discarded                                            | passages are numbered, markers validated, out-of-range markers dropped                       |
-| Index format      | `pickle` with `allow_dangerous_deserialization=True` | JSONL + `.npy` + JSON, zero pickle, loading cannot execute code                              |
-| Tests             | none                                                 | 104 unit tests, all offline, no API key required                                             |
-| Core dependencies | LangChain + FAISS + more                             | **numpy** (frameworks are optional extras)                                                   |
-
-The chunker, tokenizer, BM25 scorer, RRF fusion and every metric are implemented
-directly, roughly 1,100 lines of readable Python. That is deliberate: you cannot
-defend `k1=1.5, b=0.75` in an interview if a framework chose it for you.
 
 ## Quickstart: full pipeline in about 60 seconds, no API key, no downloads
 
@@ -195,22 +170,6 @@ something from one who followed a tutorial.
 - **Judge model bias.** LLM-as-judge faithfulness correlates with human
   judgement but is not ground truth, and it shares failure modes with the
   generator.
-
-## Resume bullet
-
-Fill the blanks from your own `make eval` output:
-
-> Built a hybrid-retrieval RAG service over \_**\_ documentation pages (\_\_**
-> chunks): BM25 + dense embeddings fused with Reciprocal Rank Fusion, optional
-> cross-encoder reranking, and grounded answers with inline citations. Built an
-> evaluation harness (recall@k, MRR, nDCG, p95 latency, LLM-judge faithfulness)
-> over \_**\_ labelled questions and used it to select the retrieval
-> configuration, improving recall@5 from \_\_** (dense-only baseline) to \_\_\_\_.
-> Python, numpy, FastAPI, Streamlit, Docker; 104 unit tests, no pickle in the
-> index format.
-
-See `ARCHITECTURE.md` for the reasoning behind each decision and `RUNBOOK.md`
-for the hour-by-hour build plan.
 
 ## License
 
